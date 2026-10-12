@@ -1,0 +1,24 @@
+function recordLogin($email, $status) {
+    $path = __DIR__ . "/login_history.csv";
+    $newFile = !file_exists($path) || filesize($path) === 0;
+
+    $file = fopen($path, "a");
+
+    if ($file) {
+        flock($file, LOCK_EX);
+
+        if ($newFile) {
+            fputcsv($file, ["email", "timestamp", "status"]);
+        }
+
+        fputcsv($file, [
+            $email,
+            date("Y-m-d H:i:s"),
+            $status
+        ]);
+
+        fflush($file);
+        flock($file, LOCK_UN);
+        fclose($file);
+    }
+}
